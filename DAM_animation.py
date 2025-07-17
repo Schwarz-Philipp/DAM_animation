@@ -12,14 +12,13 @@ import os
 import glob
 
 #--------SETTINGS------------------------------
-video_duration = 10
+video_duration = 10 #in seconds
 video_fps = 30
 show_bounding_box = True
-number_of_rotations = 2
+number_of_rotations = 1
 norm_occupancy_threshold = 0.5
 sphere_size = 50
-zoom_factor = 1
-# rotate_90 = True
+zoom_factor = 1 #values >1 zoom in, values <1 zoom out
 #-----------------------------------------------
 
 def find_files(directory: str, file_pattern: str = "*.dat") -> list:
@@ -40,7 +39,7 @@ while True: # Loop until valid input is received
             if rawfileinput.lower().endswith('.cif') or rawfileinput.lower().endswith('.pdb'):
                 print(f"Input is a file: {os.path.basename(rawfileinput)}")
                 files.append(rawfileinput)
-                break # Exit the loop if a valid .cif file
+                break 
             else:
                 print("Error: The input is a file but does not have a .cif extension. Please enter a .cif file or a folder.")
         elif os.path.isdir(rawfileinput):
@@ -49,7 +48,7 @@ while True: # Loop until valid input is received
             files.extend(cif_files)
             pdb_files = find_files(rawfileinput, '*.pdb')
             files.extend(pdb_files)
-            break # Exit the loop if a valid folder
+            break 
         else:
             print("Error: The input exists but is neither a file nor a directory. Please enter a .cif file or a folder.")
     else:
@@ -147,9 +146,6 @@ for file_path in files:
     angle_step = (360.0 * number_of_rotations) / n_frames
     
     plotter.show(auto_close=False)
-    
-    # if rotate_90:
-    #     plotter.camera.Elevation(90)
     
     for i in range(n_frames):
         plotter.camera.Azimuth(angle_step)
