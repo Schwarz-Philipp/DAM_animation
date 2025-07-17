@@ -12,15 +12,15 @@ import os
 import glob
 
 #--------SETTINGS------------------------------
-video_duration = 10 #in seconds
-video_fps = 30
-show_bounding_box = True
-number_of_rotations = 1
-norm_occupancy_threshold = 0.5
-sphere_size = 50
-zoom_factor = 1 #values >1 zoom in, values <1 zoom out
-view = 'iso' #Either use 'iso' or specify 2 axes e.g. 'yx'
-#When specifying 2 axis, the first axis (e.g. y) is horizontal and the second axis (e.g x) is vertical
+video_duration = 10 # in seconds (default: 10)
+video_fps = 30 # frames per second of the video (default: 30)  
+show_bounding_box = True # toggle if the bounding box should be shown (default: True) 
+number_of_rotations = 1 # the amount of rotations the model does in the video (default: 1) 
+norm_occupancy_threshold = 0.5 # threshold for the normalized occupancy, dummy atoms with an occupancy below the threshold will be ignored (default: 0.5) 
+sphere_size = 50 # size of the spheres representing the dummy atoms (default: 50)  
+zoom_factor = 1 # values >1 zoom in, values <1 zoom out
+view = 'iso' # Either use 'iso' or specify 2 axes e.g. 'yx'
+# When specifying 2 axis, the first axis (e.g. y) is horizontal and the second axis (e.g x) is vertical
 # The x-axis corresponds to the direction of the longest particle dimension
 # The z-axis corresponds to the direction of the shortest particle dimension
 # May require changing the zoom factor

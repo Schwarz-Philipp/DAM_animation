@@ -10,10 +10,15 @@ Example folder path: C:\Users\Username\DAM_models
 Example file path: C:\Users\Username\DAM_models\model.cif  
 
 The following settings can changed by editing the DAM_animation.py file:  
-video_duration...duration of the video in seconds (default: 10)  
-video_fps...frames per second of the video (default: 30)  
-show_bounding_box...toggle if the bounding box should be shown in the video (default: True)  
-number_of_rotations...choose how many rotations the model should do in total (default: 1)  
-norm_occupancy_threshold...set threshold for the normalized occupancy, dummy atoms with an occupancy below the threshold will be ignored (default: 0.5)  
-sphere_size...set the size of the spheres representing the dummy atoms (default: 50)  
-zoom_factor...choose if the camera should zoom further in or out (default: 1)  
+video_duration
+video_fps
+show_bounding_box
+number_of_rotations...the amount of rotations the model does in the video   
+norm_occupancy_threshold...threshold for the normalized occupancy, dummy atoms with an occupancy below the threshold will be ignored  
+sphere_size...size of the spheres representing the dummy atoms  
+zoom_factor...zoom the camera further in or out  
+view = Change the view of the animation. Either use 'iso' or specify 2 axes e.g. 'yx'.  
+When specifying 2 axes, the first axis (e.g. y) is horizontal and the second axis (e.g x) is vertical  
+The x-axis corresponds to the direction of the longest particle dimension  
+The z-axis corresponds to the direction of the shortest particle dimension  
+May require changing the zoom factor
