@@ -10,20 +10,54 @@ import pyvista as pv
 from sklearn.decomposition import PCA # Principal component analysis for the bounding box
 import os 
 import glob
+import vtk
 
 #--------SETTINGS------------------------------
+# Video Settings
 video_duration = 10 # in seconds (default: 10)
 video_fps = 30 # frames per second of the video (default: 30)  
-show_bounding_box = True # toggle if the bounding box should be shown (default: True) 
-number_of_rotations = 1 # the amount of rotations the model does in the video (default: 1) 
-norm_occupancy_threshold = 0.5 # threshold for the normalized occupancy, dummy atoms with an occupancy below the threshold will be ignored (default: 0.5) 
-sphere_size = 50 # size of the spheres representing the dummy atoms (default: 50)  
-zoom_factor = 1 # values >1 zoom in, values <1 zoom out
-view = 'iso' # Either use 'iso' or specify 2 axes e.g. 'yx'
-# When specifying 2 axis, the first axis (e.g. y) is horizontal and the second axis (e.g x) is vertical
+zoom_factor = 0.8 # values >1 zoom in, values <1 zoom out
+view = 'yx' # Either use 'iso' for isometric view or specify 2 axes e.g. 'yx'
+# When specifying 2 axis, the first axis (e.g. y) is horizontal and the second axis (e.g. x) is vertical
 # The x-axis corresponds to the direction of the longest particle dimension
 # The z-axis corresponds to the direction of the shortest particle dimension
-# May require changing the zoom factor
+
+# Model Settings
+number_of_rotations = 3 # the amount of rotations the model does in the video (default: 1) 
+norm_occupancy_threshold = 0.5 # threshold for the normalized occupancy, dummy atoms with an occupancy below the threshold will be ignored (default: 0.5) 
+sphere_size = 50 # size of the spheres representing the dummy atoms (default: 50)  
+model_cmap = 'viridis'
+
+# Bounding Box Settings
+show_bounding_box = True 
+bb_label_font_size = 20
+bb_label_color = 'red'
+
+# Scalar Bar Settings
+sb_title = 'Normalized Occupancy'
+sb_title_y = 0.065
+sb_title_font_size = 20
+sb_label_font_size = 16
+sb_text_color = 'black'
+
+sb_args = {
+    'title': '', 
+    'label_font_size': sb_label_font_size,
+    'color': sb_text_color,
+
+    # Orientation and Position
+    'vertical': False,  # Use horizontal orientation
+    'width': 0.5,       # 50% of the viewport width
+    'height': 0.05,     # 5% of the viewport height
+    'position_x': 0.25, # Center horizontally: 0.5 - (width / 2)
+    'position_y': 0.01, # Position near the bottom
+
+    # Formatting
+    'fmt': '%.2f',      # Format labels to two decimal places
+    # 'outline': True,    # Draw an outline around the bar
+    # 'fill': True,       # Fill the background of the bar
+    # 'background_color': (0.9, 0.9, 0.9) # Light grey background
+}
 #-----------------------------------------------
 
 def find_files(directory: str, file_pattern: str = "*.dat") -> list:
@@ -63,7 +97,7 @@ for file_path in files:
     folder_path = os.path.dirname(file_path)
     base = os.path.basename(file_path)
     filename, file_ext = os.path.splitext(base)
-    output_video = folder_path+'\\'+filename+'.mp4'
+    output_video = os.path.join(folder_path, filename + '.mp4')
     
     coords_list = []
     occupancy_list = []
@@ -116,9 +150,25 @@ for file_path in files:
     plotter.add_mesh(atom_cloud,
                      render_points_as_spheres=True,
                      scalars=filtered_occupancy,
-                     cmap='viridis',
+                     cmap=model_cmap,
                      point_size=sphere_size*zoom_factor,
-                     scalar_bar_args={'title': 'Normalized Occupancy'})
+                     scalar_bar_args=sb_args)
+    
+    x_frac_center = 0.50  # 50% from left (horizontal center)
+    y_frac_bottom = sb_title_y
+    window_x, window_y = plotter.window_size
+    pixel_x = int(window_x * x_frac_center)
+    pixel_y = int(window_y * y_frac_bottom)
+    text_actor = vtk.vtkTextActor()
+    text_actor.SetInput(sb_title)
+    text_prop = text_actor.GetTextProperty()
+    text_prop.SetFontSize(sb_title_font_size)
+    text_prop.SetColor(*pv.Color(sb_text_color).float_rgb)
+    text_prop.SetJustificationToCentered()
+    coord = text_actor.GetPositionCoordinate()
+    coord.SetCoordinateSystemToDisplay()
+    coord.SetValue(pixel_x, pixel_y)
+    plotter.add_actor(text_actor)
     
     if show_bounding_box:
         box = pv.Box(bounds=(min_extents[0], max_extents[0],
@@ -139,7 +189,7 @@ for file_path in files:
         for i in range(3):
             label = f"{side_lengths[i]:.0f} Å"
             plotter.add_point_labels(edge_centers[i], [label],
-                                     font_size=20, text_color='red',
+                                     font_size=bb_label_font_size, text_color=bb_label_color,
                                      shape=None, show_points=False, always_visible=True)
     
     plotter.camera_position = view
@@ -151,7 +201,7 @@ for file_path in files:
     n_frames = int(video_duration * video_fps)
     angle_step = (360.0 * number_of_rotations) / n_frames
     
-    plotter.show(auto_close=False)
+    # plotter.show(auto_close=False)
     
     for i in range(n_frames):
         plotter.camera.Azimuth(angle_step)
