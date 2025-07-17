@@ -10,9 +10,9 @@ Example folder path: C:\Users\Username\DAM_models
 Example file path: C:\Users\Username\DAM_models\model.cif  
 
 The following settings can changed by editing the DAM_animation.py file:  
-video_duration
-video_fps
-show_bounding_box
+video_duration  
+video_fps  
+show_bounding_box  
 number_of_rotations...the amount of rotations the model does in the video   
 norm_occupancy_threshold...threshold for the normalized occupancy, dummy atoms with an occupancy below the threshold will be ignored  
 sphere_size...size of the spheres representing the dummy atoms  
