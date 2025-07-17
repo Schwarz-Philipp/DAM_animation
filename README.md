@@ -2,6 +2,7 @@ This script creates .mp4 videos of dummy atom models in .cif or .pdb format.
 
 This script requires Python 3 and the following packages:
 numpy, pyvista and scikit-learn
+
 They can be installed with: pip install numpy pyvista scikit-learn
 
 To use this script simply run it and when prompted enter either a folder path or a file path to a .cif or .pdb file.
