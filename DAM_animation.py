@@ -19,6 +19,11 @@ number_of_rotations = 1
 norm_occupancy_threshold = 0.5
 sphere_size = 50
 zoom_factor = 1 #values >1 zoom in, values <1 zoom out
+view = 'iso' #Either use 'iso' or specify 2 axes e.g. 'yx'
+#When specifying 2 axis, the first axis (e.g. y) is horizontal and the second axis (e.g x) is vertical
+# The x-axis corresponds to the direction of the longest particle dimension
+# The z-axis corresponds to the direction of the shortest particle dimension
+# May require changing the zoom factor
 #-----------------------------------------------
 
 def find_files(directory: str, file_pattern: str = "*.dat") -> list:
@@ -112,7 +117,7 @@ for file_path in files:
                      render_points_as_spheres=True,
                      scalars=filtered_occupancy,
                      cmap='viridis',
-                     point_size=sphere_size,
+                     point_size=sphere_size*zoom_factor,
                      scalar_bar_args={'title': 'Normalized Occupancy'})
     
     if show_bounding_box:
@@ -135,9 +140,10 @@ for file_path in files:
             label = f"{side_lengths[i]:.0f} Å"
             plotter.add_point_labels(edge_centers[i], [label],
                                      font_size=20, text_color='red',
-                                     shape=None, show_points=True)
-
-    plotter.camera_position = 'iso'
+                                     shape=None, show_points=False, always_visible=True)
+    
+    plotter.camera_position = view
+    plotter.reset_camera_clipping_range()
     plotter.camera.zoom(zoom_factor)
     print(f"Generating animation for {filename+file_ext}...")
     plotter.open_movie(output_video, framerate=video_fps)
@@ -153,8 +159,3 @@ for file_path in files:
     
     plotter.close()
     print(f"Video saved successfully to {output_video}")
-    
-    
-    
-    
-    
