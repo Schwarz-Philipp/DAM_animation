@@ -17,7 +17,7 @@ number_of_rotations...the amount of rotations the model does in the video
 norm_occupancy_threshold...threshold for the normalized occupancy, dummy atoms with an occupancy below the threshold will be ignored  
 sphere_size...size of the spheres representing the dummy atoms  
 zoom_factor...zoom the camera further in or out  
-view = Change the view of the animation. Either use 'iso' or specify 2 axes e.g. 'yx'.  
+view...change the view of the animation. Either use 'iso' or specify 2 axes e.g. 'yx'.  
 When specifying 2 axes, the first axis (e.g. y) is horizontal and the second axis (e.g x) is vertical  
 The x-axis corresponds to the direction of the longest particle dimension  
 The z-axis corresponds to the direction of the shortest particle dimension  
