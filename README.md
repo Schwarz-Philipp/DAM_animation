@@ -1,11 +1,13 @@
 This script creates .mp4 videos of dummy atom models in .cif or .pdb format.  
 
 This script requires Python 3 and the following packages:  
-numpy, pyvista and scikit-learn  
+numpy, pyvista, imageio and scikit-learn  
 
-They can be installed with: pip install numpy pyvista scikit-learn
+They can be installed with: pip install numpy pyvista imageio scikit-learn
 
-To use this script simply run it and when prompted enter either a folder path or a file path to a .cif or .pdb file.
+To use this script simply run it and when prompted enter either a folder path or a file path to a .cif or .pdb file.  
+Example folder path: C:\Users\Username\DAM_models  
+Example file path: C:\Users\Username\DAM_models\model.cif  
 
 The following settings can changed by editing the DAM_animation.py file:  
 video_duration...duration of the video in seconds (default: 10)  
