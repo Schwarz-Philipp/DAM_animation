@@ -11,21 +11,25 @@ from sklearn.decomposition import PCA # Principal component analysis for the bou
 import os 
 import glob
 import vtk
+import warnings
 
 #--------SETTINGS--------------------------------------------------------------
 # Video Settings
 video_duration = 10     # Duration of the output video in seconds.
 video_fps = 30          # Frames per second for the output video.
-zoom_factor = 0.85      # Camera zoom. Values > 1 zoom in, values < 1 zoom out.
+zoom_factor = 1.0      # Camera zoom. Values > 1 zoom in, values < 1 zoom out.
 view = 'yx'             # Initial camera view. Use 'iso' for isometric or specify two axes (e.g., 'yx').
 # For two-axis views, the first axis is horizontal, and the second is vertical.
 # The axes correspond to the principal components of the particle:
 # x-axis: longest dimension, y-axis: intermediate, z-axis: shortest.
 
+fancy_spheres = False           #Set to True to use a fancier method for rendering spheres.
+#Warning: fancy_spheres=True may not work on all systems and can lead to invisible dummy atoms.
+
 # Model Settings
 number_of_rotations = 1         # Number of full 360-degree rotations in the video.
 norm_occupancy_threshold = 0.5  # Normalized occupancy threshold (0.0 to 1.0). Atoms below this value will be hidden.
-sphere_size = 50                # Size of the spheres representing dummy atoms.
+sphere_size = 20                # Size of the spheres representing dummy atoms.
 model_cmap = 'viridis'          # Colormap for dummy atom occupancy. Search "matplotlib colormaps" online for more options.
 flip_on_head = False            # Flip the model upside down.
 # Offset the model from the center (in Ångströms).
@@ -163,14 +167,30 @@ for file_path in files:
     # plotter = pv.Plotter(off_screen=False)
     plotter = pv.Plotter(off_screen=True)
     plotter.background_color = 'white'
-
-    atom_cloud = pv.PolyData(transformed_coords)
-    plotter.add_mesh(atom_cloud,
-                     render_points_as_spheres=True,
-                     scalars=filtered_occupancy,
-                     cmap=model_cmap,
-                     point_size=sphere_size*zoom_factor,
-                     scalar_bar_args=sb_args)
+    
+    if fancy_spheres:
+        atom_cloud = pv.PolyData(transformed_coords)
+        plotter.add_mesh(atom_cloud,
+                         render_points_as_spheres=True,
+                         scalars=filtered_occupancy,
+                         cmap=model_cmap,
+                         point_size=sphere_size*zoom_factor,
+                         scalar_bar_args=sb_args)
+        
+    else:
+        atom_cloud = pv.PolyData(transformed_coords)
+        atom_cloud["occupancy"] = filtered_occupancy
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", message="No vector-like data to use for orient.*")
+            glyphs = atom_cloud.glyph(
+                scale=False,
+                geom=pv.Sphere(radius=sphere_size)
+            )
+        plotter.add_mesh(
+            glyphs,
+            cmap=model_cmap,
+            scalar_bar_args=sb_args
+        )
     
     x_frac_center = 0.50  # 50% from left (horizontal center)
     y_frac_bottom = sb_title_y
