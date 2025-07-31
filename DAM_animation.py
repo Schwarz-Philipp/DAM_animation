@@ -39,6 +39,7 @@ z_offset = 0
 
 # Bounding Box Settings
 show_bounding_box = True # Display the bounding box around the model.
+show_bb_labels = True    # Display the bounding box dimension labels.
 bb_label_font_size = 20  # Font size for the bounding box dimension labels.
 bb_label_color = 'red'   # Color for the bounding box dimension labels.
 bb_label_bold = True     # Make the bounding box dimension labels bold.
@@ -209,26 +210,26 @@ for file_path in files:
     coord.SetValue(pixel_x, pixel_y)
     plotter.add_actor(text_actor)
     
+    box_center = (min_extents + max_extents) / 2
+    principal_axes = np.identity(3)
+    flip_sign = 1
+    if flip_on_head:
+        flip_sign = -1
+    offset = 0.5
+    edge_centers = [
+    box_center+principal_axes[1]*side_lengths[1]*offset+principal_axes[2]*side_lengths[2]*offset,
+    box_center+principal_axes[0]*side_lengths[0]*offset*flip_sign+principal_axes[2]*side_lengths[2]*offset,
+    box_center+principal_axes[0]*side_lengths[0]*offset*flip_sign+principal_axes[1]*side_lengths[1]*offset
+    ]
+    
     if show_bounding_box:
         box = pv.Box(bounds=(min_extents[0], max_extents[0],
                        min_extents[1], max_extents[1],
                        min_extents[2], max_extents[2]))
         
         plotter.add_mesh(box, style='wireframe', color='black', line_width=2)
-        box_center = (min_extents + max_extents) / 2
-        principal_axes = np.identity(3)
         
-        flip_sign = 1
-        if flip_on_head:
-            flip_sign = -1
-        
-        offset = 0.5
-        edge_centers = [
-        box_center+principal_axes[1]*side_lengths[1]*offset+principal_axes[2]*side_lengths[2]*offset,
-        box_center+principal_axes[0]*side_lengths[0]*offset*flip_sign+principal_axes[2]*side_lengths[2]*offset,
-        box_center+principal_axes[0]*side_lengths[0]*offset*flip_sign+principal_axes[1]*side_lengths[1]*offset
-        ]
-        
+    if show_bb_labels:
         for i in range(3):
             label = f"{side_lengths[i]:.0f} Å"
             plotter.add_point_labels(edge_centers[i], [label],
